@@ -32,25 +32,31 @@
 # e.g.
 #   interface_name=$(ip a |awk '/: e/{gsub(/:/,"");print $2}')
 
-Hostname=$(hostname)
-LANAddress=$(ip a s $(ip a |awk '/: e/{gsub(/:/,"");print $2}')|awk '/inet /{gsub(/\/.*/,"");print $2}')
-LANHostname=$(ip a |awk '/: e/{gsub(/:/,"");print $2}')
-ExternalIP=$(curl -s icanhazip.com)
-ExternalName=$(getent hosts $(curl -s icanhazip.com) | awk '{print $2}')
-RouterAddress=$(ip route show | grep -i 'default via'| awk '{print $3 }')
-RouterName=$(head -n 1 /etc/hosts | awk '{print $2}')
-NetworkAddress=$(tail -n 1 /etc/networks | awk '{print $2}')
-NetworkName=$(tail -n 1  /etc/networks | awk '{print $1}')
-
+#cat <<EOF
+#Hostname        : $(hostname)
+#LAN Address     : $(ip a s $(ip a |awk '/: e/{gsub(/:/,"");print $2}')|awk '/inet /{gsub(/\/.*/,"");print $2}')
+#LAN Hostname    : $(getent hosts $(ip a s $(ip a |awk '/: e/{gsub(/:/,"");print $2}'))|awk '/inet /{gsub(/\/.*/,"");print $2}' | awk '{print $2}')
+#External IP     : $(curl -s icanhazip.com)
+#External Name   : $(getent hosts $(curl -s icanhazip.com) | awk '{print $2}')
 #EOF
+
+myHostName=$(hostname)
+interfacename=$(ip a |awk '/: e/{gsub(/:/,"");print $2}')
+lanIpAddress=$(ip a s $interfacename|awk '/inet /{gsub(/\/.*/,"");print $2}')
+lanHostname=$(getent hosts $lanIpAddress | awk '{print $2}')
+externalIp=$(curl -s icanhazip.com)
+routerAddress=$(ip route | grep 'default'| awk '{print $3}')
+routerHostname=$(getent hosts $routerAddress | awk '{print $2}')
+networkAddress=$(route -n |awk '/255.255.255.0/''{print $1}')
+networkName=$(getent networks $networkAddress | awk '{print $1}')
+
 cat <<EOF
-Hostname      :$Hostname
-LAN Address   :$LANAddress
-LAN Hostname  :$LANHostname
-External IP   :$ExternalIP
-ExternalName  :$ExternalName
-RouterAddress :$RouterAddress
-RouterName    :$RouterName
-NetworkAddress:$NetworkAddress
-NetworkName   :$NetworkName
+Hostname        : $myHostName
+LAN Address     : $lanIpAddress
+LAN Hostname    : $lanHostname
+External IP     : $externalIp
+Router Address  : $routerAddress
+Router Hostname : $routerHostname
+Network Number  : $networkAddress
+Network Name    : $routerHostname
 EOF

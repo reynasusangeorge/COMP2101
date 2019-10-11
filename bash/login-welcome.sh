@@ -24,7 +24,7 @@ day=$(date +%a)
 ###############
 #cat <<EOF
 
-finalMsg="Welcome to planet $hostname, $title $myname! It is $time on $day"
+finalMsg="Welcome to the planet $hostname, $title $myname! It is $time on $day"
 cowsay "$finalMsg"
 
 #EOF
